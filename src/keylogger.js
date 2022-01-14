@@ -26,15 +26,10 @@ app.listen(port, () => {
     console.log(`App listening on port ${port}!`)
 });
 
-//Home mapping
+//Main Page mapping
 app.get('/', (req, res) => {
-    res.redirect('/home')
+    res.redirect('/testKeylogger')
 });
-
-//Also the home mapping
-app.get('/home', (req, res) => {
-    res.sendFile(__dirname + '/content/testingPage.html')
-}); 
 
 app.get('/testKeylogger', (req, res) => {
 
