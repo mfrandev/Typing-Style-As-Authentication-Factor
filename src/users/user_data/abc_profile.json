@@ -1,0 +1,16 @@
+{
+	"id": "abc",
+	"password": "abc",
+	"id_averages": {
+		"1": "a|0",
+		"2": "b|58",
+		"3": "c|332",
+		"total": 390
+	},
+	"password_averages": {
+		"1": "a|0",
+		"2": "b|70",
+		"3": "c|343",
+		"total": 413
+	}
+}
