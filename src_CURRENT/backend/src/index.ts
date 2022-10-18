@@ -11,6 +11,10 @@ app.listen(port, () => {
   console.info('Express application started on port: ' + port);
 });
 
+/************************************************************************************
+ *                                    Endpoints
+ ***********************************************************************************/
+
 /**
  * Endpoint for registering a user in the system
  */
@@ -49,6 +53,48 @@ app.post('/processSignup', (req, res) => {
   // Otherwise success
   res.status(200).send({message: `Profile "${userProfile.username}" successfully created`});
 });
+
+/**
+ * Attempt to log the user in based on the login profile received
+ */
+app.post('/login', (req, res) => {
+
+  // Get the existing user profile to compare against
+  let profile: UserProfileInterface | false = getUserProfile(req.body.username);
+
+  // If the profile does not exist, return proper error message
+  if(!profile) return res.status(500).send({message: `Error, username "${req.body.username}" is not registered`});
+
+  // Invalid login credentials
+  if(req.body.username !== profile.username || req.body.password !== profile.password) return res.status(500).send({message: `Error, invalid login credentials`});
+
+  // Pretty printing to show how system performs checks
+  console.log('');
+  console.log('===== CHECKING USERNAME =====');
+
+  // Check if the username was typed correctly
+  let status = loginSuccessful(req.body.usernameAverages, profile.usernameAverages);
+
+  // If not, send a failure status with error
+  if(!status) return res.status(500).send({message: "Error validating username"});
+  console.log('');
+
+  console.log('===== CHECKING PASSWORD =====');
+
+  // Check if the password was typed correctly
+  status = loginSuccessful(req.body.passwordAverages, profile.passwordAverages);
+  console.log('');
+
+  // If not, return error message
+  if(!status) return res.status(500).send({message: "Error validating password"});
+
+  // If nothing went wrong, return success status
+  res.status(200).send({message: "Login successful!"});
+});
+
+/************************************************************************************
+ *                                Helper Functions
+ ***********************************************************************************/
 
 /**
  * 
@@ -189,7 +235,11 @@ const calculateUsernameAndPasswordAverages = (data: KeystrokeTimes[]) => {
 
 }
 
-// Write the generated aggregate user profile to the filesystem
+/**
+ *  Write the generated aggregate user profile to the filesystem
+ * @param profile UserProfileInterface: data to write to file
+ * @returns boolean: true on success, false on failure
+ */
 const registerUserProfile = (profile: UserProfileInterface) => {
 
   // Catch failures
@@ -209,3 +259,118 @@ const registerUserProfile = (profile: UserProfileInterface) => {
   return true;
 }
 
+/**
+ * Get the user profile for a specified user
+ * @param username string: Check if the file with this username exists
+ * @returns UserProfileInterface | false: false if user does not exist, otherwise user
+ */
+const getUserProfile = (username: string): UserProfileInterface | false => {
+
+  // Catching errors
+  try {
+
+    // Get the user profile and return it
+    let data = fs.readFileSync(`./src/users/${username}_profile.json`, 'utf-8');
+    return JSON.parse(data);
+  } 
+  
+  // Log the error and return failure
+  catch(error) {
+    console.log(error);
+    return false;
+  }
+
+}
+
+/**
+ * Determine if the login profile is close enough to the saved profile to approve login
+ * @param loginAttempt KeystrokeAverages: 
+ * @param aggregateData KeystrokeAverages: 
+ * @returns boolean: true for successful login, false for failure
+ */
+const loginSuccessful = (loginAttempt: KeystrokeAverages, aggregateData: KeystrokeAverages): boolean => {
+
+  // If bad login values, return false
+  if(loginAttempt.averageData.length !== aggregateData.averageData.length) return false;
+
+  // Set upper and lower threshold ranges for text field
+  let lowerThresholdModifier: number = 0.60;
+  let upperThresholdModifier: number = 1.40;
+
+  // Save the number of range matches
+  let numMatches: number = 0;
+
+  // Set the high and low threshold values
+  let high = 0;
+  let low = 0;
+
+  // Set the actual value to check against the threshold range
+  let actual = 0;
+
+  // Get the number of interval matches for each letter in the entry to the profile
+  console.log('Character by character validation:');
+  for(let i = 1; i < loginAttempt.averageData.length; i++) {
+
+    // Calculate threshold values
+    high = Math.round(aggregateData.averageData[i].interval * upperThresholdModifier);
+    low = Math.round(aggregateData.averageData[i].interval * lowerThresholdModifier);
+
+    // Get actual value and print range
+    actual = loginAttempt.averageData[i].interval;
+    console.log(`if ${low} < ${actual} < ${high}, then numMatches++`);
+
+    // Determine if threshold is met
+    if(actual <= low || actual >= high) {
+
+      // Interval difference is quite small, so match is permissible
+      if(Math.abs(actual - aggregateData.averageData[i].interval) <= 50) {console.log(`    Since ${Math.abs(actual - aggregateData.averageData[i].interval)} <= 50, numMatches++`);numMatches++;}
+    } 
+    
+    // Simply falls in the range
+    else {
+      numMatches++;
+    }
+
+  }
+
+  // Print if enough matches were made
+  console.log(`${numMatches}/${loginAttempt.averageData.length - 1} = ${(numMatches / (loginAttempt.averageData.length - 1))} (>= 0.60 is successful)`);
+
+  // Enough matches were made, return true
+  if((numMatches / (loginAttempt.averageData.length - 1)) >= 0.6) {
+    return true;
+  }
+
+  // If every match was met, return true
+  if(numMatches === loginAttempt.averageData.length) {
+    console.log(`${numMatches}===${loginAttempt.averageData.length - 1}`);
+    return true
+  }
+
+  // Check the proximity of the total time for the entry to the profile
+  upperThresholdModifier = 1.20;
+  lowerThresholdModifier = 0.80;
+
+  // Get new threshold for total 
+  high = Math.round(aggregateData.total *  upperThresholdModifier);
+  low = Math.round(aggregateData.total * lowerThresholdModifier);
+
+  // Get actual range
+  actual = loginAttempt.total;
+
+  // Show range
+  console.log('\nTotal time validation');
+  console.log(`${low} ---- ${actual} ---- ${high}`);
+
+  // Determine if range for total time was met and if not, return false
+  if(actual <= low || actual >= high) {
+    console.log(`if ${Math.abs(actual - aggregateData.total)} <= 50, success`);
+    if(Math.abs(actual - aggregateData.total) <= 50) return true;
+    return false;
+  }
+
+  // Success, so return true
+  console.log('validation success');
+  return true;
+
+}

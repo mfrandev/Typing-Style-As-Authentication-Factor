@@ -2,9 +2,9 @@ import type { KeystrokeAverages } from "./KeystrokeAveragesInterface";
 
 export interface UserProfileInterface {
 
-    id: string,
+    username: string,
     password: string,   
-    idAverages: KeystrokeAverages,
+    usernameAverages: KeystrokeAverages,
     passwordAverages: KeystrokeAverages
 
 }

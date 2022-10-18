@@ -127,7 +127,7 @@
 
         {#key transition}
 
-            <div class='input-container' action='http://localhost:8080/processSignup' method='POST'>
+            <div class='input-container'>
 
                 {#if !calibrating}
 
