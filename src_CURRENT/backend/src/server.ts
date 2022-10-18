@@ -34,6 +34,7 @@ getFilesWithKeyword('router', __dirname + '/app').forEach((file: string) => {
   const { router } = require(file);
   app.use('/', router);
 })
+
 /************************************************************************************
  *                               Express Error Handling
  ***********************************************************************************/
