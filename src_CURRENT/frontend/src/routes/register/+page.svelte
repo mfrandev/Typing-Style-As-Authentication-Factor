@@ -92,7 +92,7 @@
 
 </script>
 
-// Lets 'Enter' key work universally on the page and functions will execute (assuming the initial conditions are met)
+<!-- Lets 'Enter' key work universally on the page and functions will execute (assuming the initial conditions are met) -->
 <svelte:window on:keyup={async (e) => {
     if(e.key !== 'Enter') return;
     if(doneCalibrating) {
