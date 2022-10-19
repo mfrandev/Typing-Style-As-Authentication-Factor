@@ -1,21 +1,32 @@
-# Keylogger ss Authentication Factor Program and Experiment Report
+# Keylogger: Authentication By Typing Style
 
-In this repository, you will find code to a keylogger program that was used to perform two experiments. The details of these experiments can be found in Keylogger_Report.pdf. 
+In this repository, you will find code to two functionally equivalent (server side) keylogger programs. The code in src_DEPRICATED was used to perform two experiments and the details of these experiments can be found in Keylogger_Report.pdf. 
+
+The code in src_CURRENT is a (drastically) improved implementation of src_DEPRICATED using TypeScript, where the data structures have been modified, the core algorithm used to determine login success is unchanged, and provides a superior user experience. 
 
 ## Usage Instructions
 
-1. After downloading the repository, go into the /src directory of this project and run 'node keylogger.js' to start the server.
-2. Go to 'localhost:3000/' (or whichever port is specified if modified in keylogger.js) to access the UI
-3. For the purposes of generating clean JSON, the 'enter' and 'tab' keys have been disabled in the UI
+For src_DEPRICATED (Linux/UNIX) <b>(NOT RECOMMENDED FOR USE)</b>: 
+1. Run 'sh runDepricated.sh' from the root directory
+    a. This ensures all dependencies are installed and starts the server
+2. Open your web browser and navigate to 'localhost:3000/' to be taken to the homepage 
+
+For src_CURRENT (Linux/UNIX) <b>(RECOMMENDED FOR USE)</b>: 
+1. Run 'sh runCurrent.sh' from the root directory
+    a. This ensures all dependencies are installed and starts the backend/frontend servers
+2. Open your web browser and navigate to '127.0.0.1:5173/' to be taken to the homepage 
 
 ## Managing User Profiles
 
-Only profiles located within the directory /src/users/user_data/ are considered for login. <br>
+For src_DEPRICATED:
+1. Only profiles located within the directory /src/users/user_data/ are considered for login. <br>
 
-All of the profiles in /src/users/ExperimentData are not considered for login purposes, but to preserve the data used in the experiments. If you want to test the replicability of an experiment, I would strongly recommend making your own copies of those login (ID/Password) combinations because it's fairly given that you and I do not type in the same way. <br>
+2. All of the profiles in /src/users/ExperimentData are not considered for login purposes, but to preserve the data used in the experiments. If you want to test the replicability of an experiment, I would strongly recommend making your own copies of those login (ID/Password) combinations because it's fairly given that you and I do not type in the same way. <br>
 
-Abandoning the calibration process before completion will not delete the {id}_profile_creation.json file, so that process must be performed manually under those circumstances. 
+3. Abandoning the calibration process before completion will not delete the {id}_profile_creation.json file, so that process must be performed manually under those circumstances. 
 
-### Disclaimer
+For src_CURRENT:
+1. All user profiles are stored in ./src_CURRENT/backend/users and there is no secondary directory for experiment data at this time. 
+    a. I hope to reproduce the experiements for src_DEPRICATED on src_CURRENT to the best of my ability, given I don't have access to the same resources/test subjects. 
 
-I wrote this code before learning how to use any frontend frameworks or Node.js beyond basic routing, so feel free to make my code better if for some reason you want to.
+2. Profile files are now created post calibration on the server-side, so abandonning calibration will no longer produce an orphaned file. 

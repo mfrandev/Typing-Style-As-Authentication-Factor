@@ -59,6 +59,7 @@
     let status: any = false;
     let code: number; 
     const finishCalibration = async () => {
+        if(!usernameMatch || !passwordMatch) return;
         profileCalibration.entries.push({usernameTimes: usernameTimes, passwordTimes: passwordTimes});
         let data = await fetch('http://localhost:8080/processSignup', {
             method: 'POST',
@@ -90,6 +91,21 @@
     let passwordTimes: CharacterData[] = [];
 
 </script>
+
+// Lets 'Enter' key work universally on the page and functions will execute (assuming the initial conditions are met)
+<svelte:window on:keyup={async (e) => {
+    if(e.key !== 'Enter') return;
+    if(doneCalibrating) {
+        await finishCalibration();
+        return;
+    } else if(!calibrating) {
+        startCalibration();
+        return
+    } else if(calibrating) {
+        calibrationIteration();
+        return;
+    }
+}} />
 
 <div class='page-container'>
 

@@ -2,7 +2,7 @@
     import InputBar from "./../../components/InputBar.svelte";
     import { onMount } from 'svelte';
     import { fly, fade } from 'svelte/transition';
-    import type { ProfileCalibration, CharacterData } from './../../interfaces/ProfileCalibration';
+    import type { CharacterData } from './../../interfaces/ProfileCalibration';
     import type { UserProfileInterface } from './../../interfaces/UserProfileInterface';
 
     // =========== For animations ===========
@@ -83,6 +83,13 @@
     let passwordTimes: CharacterData[] = [];
 
 </script>
+
+// Lets 'Enter' key work universally on the page and function will execute (assuming the initial conditions are met)
+<svelte:window on:keyup={async (e) => {
+    if(e.key !== 'Enter') return;
+    if(!loginReady) return;
+    await submitLogin();
+}} />
 
 <div class='page-container'>
 
