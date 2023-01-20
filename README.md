@@ -1,5 +1,7 @@
 # Keylogger: Authentication By Typing Style
 
+Read the performance report [here](Typing-Style-As-Authentication-Factor/Keylogger_Report.pdf)
+
 In this repository, you will find code to two functionally equivalent (server side) keylogger programs. The code in src_DEPRICATED was used to perform two experiments and the details of these experiments can be found in Keylogger_Report.pdf. 
 
 The code in src_CURRENT is a (drastically) improved implementation of src_DEPRICATED using TypeScript, where the data structures have been modified, the core algorithm used to determine login success is unchanged, and provides a superior user experience. 
