@@ -6,7 +6,7 @@ The code in src_CURRENT is a (drastically) improved implementation of src_DEPRIC
 
 ## Performance
 
-If interested, background information and performance report can be found in my report [here](Keylogger_Report.pdf).
+If interested, some background information and a performance report can be found [here](Keylogger_Report.pdf).
 
 ## Usage Instructions
 
